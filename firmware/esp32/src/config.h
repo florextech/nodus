@@ -1,0 +1,8 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define NODUS_VERSION "0.1.0"
+#define STATE_CHANGE_INTERVAL_MS 3000
+#define SERIAL_BAUD_RATE 115200
+
+#endif
