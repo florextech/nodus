@@ -4,14 +4,14 @@
 
 Nodus es una mascota/asistente virtual físico basado en ESP32. Combina una pantalla, conectividad MQTT y una futura capa de inteligencia artificial para crear un compañero interactivo que expresa emociones y reacciona a su entorno.
 
-## Objetivo de esta fase
+## Estado actual: Fase 2
 
-Fase 1: Establecer la arquitectura base del firmware con una simulación funcional de estados emocionales, sin hardware real ni dependencias externas.
+Pantalla OLED SSD1306 con caras gráficas bitmap y animación de parpadeo.
 
-- Máquina de estados con 5 emociones.
-- Representación visual ASCII por Serial Monitor.
-- Arquitectura modular y desacoplada.
-- Simulación ejecutable en Wokwi.
+- 5 emociones con representación bitmap (48x48px).
+- Parpadeo aleatorio cada 3-7 segundos.
+- Redraw eficiente (solo cuando cambia el estado visual).
+- Simulable en Wokwi con componente OLED.
 
 ## Cómo ejecutar en Wokwi
 
@@ -19,26 +19,32 @@ Fase 1: Establecer la arquitectura base del firmware con una simulación funcion
 2. Crea un nuevo proyecto ESP32.
 3. Copia los archivos del directorio `firmware/esp32/` en el proyecto.
 4. Ejecuta la simulación.
-5. Abre el Serial Monitor para ver los cambios de estado.
+5. La pantalla OLED muestra las caras de Nodus rotando cada 3s con parpadeo.
 
-## Arquitectura actual
+## Arquitectura
 
 ```
-sketch.ino          → Punto de entrada (setup/loop)
-src/config.h        → Configuración global
-src/NodusState.h/cpp → Máquina de estados (Mood)
-src/NodusFace.h/cpp  → Representación visual por estado
+sketch.ino              → Punto de entrada (setup/loop)
+src/config.h            → Configuración global
+src/NodusState.h/cpp    → Máquina de estados (Mood)
+src/NodusFace.h/cpp     → Representación ASCII (Serial)
+src/NodusDisplay.h/cpp  → Wrapper pantalla OLED SSD1306
+src/NodusAnimator.h/cpp → Parpadeo y micro-animaciones
+src/faces_bmp.h         → Bitmaps por emoción (48x48)
 ```
 
-Principios:
-- Responsabilidad única por clase.
-- Bajo acoplamiento entre módulos.
-- Fácil extensibilidad para futuras integraciones.
+## Hardware (simulado)
+
+| Componente | Conexión |
+|-----------|----------|
+| ESP32 DevKit C V4 | — |
+| OLED SSD1306 128x64 | SDA=GPIO21, SCL=GPIO22, 0x3C |
 
 ## Próximas fases
 
-- **Fase 2**: Pantalla OLED/TFT con caras gráficas.
-- **Fase 3**: Conectividad MQTT para recibir comandos remotos.
-- **Fase 4**: Sensores y botones físicos.
-- **Fase 5**: Integración con capa de IA (OpenClaw).
-- **Fase 6**: LED RGB y feedback visual avanzado.
+- **Fase 3**: Conectividad WiFi + MQTT.
+- **Fase 4**: Backend/Bridge + integración IA (OpenAI).
+- **Fase 5**: Personalidad persistente + contexto.
+- **Fase 6**: Input de audio (micrófono).
+- **Fase 7**: Output de audio (TTS).
+- **Fase 8**: Hardware final (TFT, LED RGB, touch).
