@@ -48,22 +48,22 @@ export default function NodusSimulator() {
   }, [logs]);
 
   return (
-    <div className="relative flex flex-col items-center gap-8">
+    <div className="relative flex flex-col items-center gap-6 sm:gap-8">
       {/* Header */}
       <div className="flex items-center gap-3 w-full">
-        <div className="h-2 w-2 rounded-full bg-[var(--brand-600)] animate-pulse" />
-        <h1 className="text-sm font-semibold tracking-[0.2em] uppercase text-[var(--foreground)]">
+        <div className="h-2 w-2 rounded-full bg-[var(--brand-600)] animate-pulse shrink-0" />
+        <h1 className="text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase text-[var(--foreground)]">
           Nodus
         </h1>
         <div className="flex-1 h-px bg-[var(--border)]" />
-        <span className="text-[0.6rem] text-[var(--muted)] uppercase tracking-wider">v0.1.0</span>
+        <span className="text-[0.55rem] sm:text-[0.6rem] text-[var(--muted)] uppercase tracking-wider">v0.1.0</span>
       </div>
 
       {/* Face area */}
-      <div className="relative w-full flex flex-col items-center py-6">
+      <div className="relative w-full flex flex-col items-center py-4 sm:py-6">
         <NodusFace mood={mood} />
-        <div className="mt-5">
-          <span className="inline-flex items-center rounded-full border border-[rgba(189,241,70,0.35)] bg-[rgba(189,241,70,0.08)] px-3 py-1 text-[0.65rem] font-semibold text-[var(--brand-700)] uppercase tracking-[0.18em]">
+        <div className="mt-4 sm:mt-5">
+          <span className="inline-flex items-center rounded-full border border-[rgba(189,241,70,0.35)] bg-[rgba(189,241,70,0.08)] px-3 py-1 text-[0.6rem] sm:text-[0.65rem] font-semibold text-[var(--brand-700)] uppercase tracking-[0.18em]">
             <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-[var(--brand-600)]" />
             {mood}
           </span>
@@ -75,10 +75,10 @@ export default function NodusSimulator() {
 
       {/* Controls section */}
       <div className="w-full space-y-3">
-        <p className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+        <p className="text-[0.55rem] sm:text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
           Estados
         </p>
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+        <div className="grid grid-cols-3 xs:grid-cols-5 sm:grid-cols-5 gap-1.5 sm:gap-2">
           {MOODS.map((m, i) => (
             <button
               key={m.name}
@@ -86,16 +86,16 @@ export default function NodusSimulator() {
                 setAutoMode(false);
                 setMood(i);
               }}
-              className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-center transition duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-600)] ${
+              className={`flex flex-col items-center gap-0.5 sm:gap-1 rounded-lg sm:rounded-xl border px-1.5 sm:px-2 py-2 sm:py-3 text-center transition duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-600)] ${
                 i === currentIndex
                   ? 'border-[rgba(189,241,70,0.65)] bg-[rgba(189,241,70,0.1)]'
                   : 'border-[var(--border)] bg-[var(--surface)] hover:border-[rgba(189,241,70,0.4)] hover:bg-[var(--surface-muted)]'
               }`}
             >
-              <span className={`text-lg ${i === currentIndex ? 'text-[var(--brand-700)]' : 'text-[var(--foreground)]'}`}>
+              <span className={`text-base sm:text-lg ${i === currentIndex ? 'text-[var(--brand-700)]' : 'text-[var(--foreground)]'}`}>
                 {m.face}
               </span>
-              <span className={`text-[0.55rem] uppercase tracking-wider font-medium ${i === currentIndex ? 'text-[var(--brand-600)]' : 'text-[var(--muted)]'}`}>
+              <span className={`text-[0.5rem] sm:text-[0.55rem] uppercase tracking-wider font-medium ${i === currentIndex ? 'text-[var(--brand-600)]' : 'text-[var(--muted)]'}`}>
                 {m.name}
               </span>
             </button>
@@ -105,7 +105,7 @@ export default function NodusSimulator() {
         {/* Auto toggle */}
         <button
           onClick={() => setAutoMode(!autoMode)}
-          className={`w-full rounded-xl border px-4 py-2.5 text-xs font-semibold transition duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-600)] ${
+          className={`w-full rounded-lg sm:rounded-xl border px-4 py-2 sm:py-2.5 text-[0.65rem] sm:text-xs font-semibold transition duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-600)] ${
             autoMode
               ? 'border-[rgba(189,241,70,0.65)] bg-[linear-gradient(180deg,var(--brand-700),var(--brand-600))] text-[#111513]'
               : 'border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] hover:border-[rgba(189,241,70,0.52)]'
@@ -120,12 +120,12 @@ export default function NodusSimulator() {
 
       {/* Log */}
       <div className="w-full space-y-2">
-        <p className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+        <p className="text-[0.55rem] sm:text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
           Actividad
         </p>
         <div
           ref={logRef}
-          className="w-full h-24 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-[0.6rem] font-mono text-[var(--muted)] overflow-y-auto"
+          className="w-full h-20 sm:h-24 rounded-lg sm:rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2.5 sm:p-3 text-[0.55rem] sm:text-[0.6rem] font-mono text-[var(--muted)] overflow-y-auto"
         >
           {logs.map((l, i) => (
             <div key={i} className="py-0.5">
