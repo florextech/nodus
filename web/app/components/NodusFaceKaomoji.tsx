@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Mood, KAOMOJI_FACES, FaceShape } from '../lib/moods';
 import styles from './NodusFace.module.css';
 
-const GLOW_MAP: Record<Mood, string> = {
+const GLOW: Record<Mood, string> = {
   happy: styles.glowHappy,
   sleepy: styles.glowSleepy,
   thinking: styles.glowThinking,
@@ -24,17 +24,14 @@ export default function NodusFaceKaomoji({ mood, shape = 'circle' }: { mood: Moo
     return () => clearInterval(id);
   }, []);
 
-  const shapeClass = shape === 'square' ? styles.shapeSquare : shape === 'rect' ? styles.shapeRect : '';
+  const shapeClass = shape === 'square' ? styles.square : shape === 'rect' ? styles.rect : '';
 
   return (
     <div className={styles.wrapper}>
-      <div className={`${styles.ring} ${GLOW_MAP[mood]} ${shapeClass}`}>
-        <div className={`${styles.inner} ${shapeClass}`}>
-          <div className={`${styles.innerGlow} ${shapeClass}`} />
-          <span className={styles.faceKaomoji}>
-            {blinking ? '(≡ω≡)' : KAOMOJI_FACES[mood]}
-          </span>
-        </div>
+      <div className={`${styles.container} ${GLOW[mood]} ${shapeClass}`}>
+        <span className={styles.faceTextKaomoji}>
+          {blinking ? '(≡ω≡)' : KAOMOJI_FACES[mood]}
+        </span>
       </div>
     </div>
   );

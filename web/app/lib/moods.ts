@@ -4,7 +4,7 @@ export type FaceShape = 'circle' | 'square' | 'rect';
 
 export const FACE_STYLES: { id: FaceStyle; label: string }[] = [
   { id: 'ascii', label: 'ASCII' },
-  { id: 'pixel', label: 'Minimal' },
+  { id: 'pixel', label: 'SVG' },
   { id: 'kaomoji', label: 'Kaomoji' },
 ];
 

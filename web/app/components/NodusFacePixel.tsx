@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Mood, FaceShape } from '../lib/moods';
 import styles from './NodusFace.module.css';
 
-const GLOW_MAP: Record<Mood, string> = {
+const GLOW: Record<Mood, string> = {
   happy: styles.glowHappy,
   sleepy: styles.glowSleepy,
   thinking: styles.glowThinking,
@@ -12,76 +12,68 @@ const GLOW_MAP: Record<Mood, string> = {
   alert: styles.glowAlert,
 };
 
-function Eyes({ mood, blinking }: { mood: Mood; blinking: boolean }) {
+function Face({ mood, blinking }: { mood: Mood; blinking: boolean }) {
+  const c = '#d7ff6d';
+
   if (blinking) {
     return (
-      <>
-        <rect x="24" y="38" width="16" height="3" rx="1.5" fill="currentColor" />
-        <rect x="60" y="38" width="16" height="3" rx="1.5" fill="currentColor" />
-      </>
+      <g>
+        <line x1="25" y1="40" x2="38" y2="40" stroke={c} strokeWidth="3" strokeLinecap="round" />
+        <line x1="62" y1="40" x2="75" y2="40" stroke={c} strokeWidth="3" strokeLinecap="round" />
+      </g>
     );
   }
 
   switch (mood) {
     case 'happy':
       return (
-        <>
-          <path d="M24 40 Q32 30 40 40" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
-          <path d="M60 40 Q68 30 76 40" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
-        </>
+        <g>
+          <path d="M25 38 Q31.5 28 38 38" stroke={c} strokeWidth="3" strokeLinecap="round" fill="none" />
+          <path d="M62 38 Q68.5 28 75 38" stroke={c} strokeWidth="3" strokeLinecap="round" fill="none" />
+          <path d="M35 60 Q50 72 65 60" stroke={c} strokeWidth="3" strokeLinecap="round" fill="none" />
+        </g>
       );
     case 'sleepy':
       return (
-        <>
-          <rect x="24" y="38" width="16" height="3" rx="1.5" fill="currentColor" />
-          <rect x="60" y="38" width="16" height="3" rx="1.5" fill="currentColor" />
-        </>
+        <g>
+          <line x1="25" y1="40" x2="38" y2="40" stroke={c} strokeWidth="3" strokeLinecap="round" />
+          <line x1="62" y1="40" x2="75" y2="40" stroke={c} strokeWidth="3" strokeLinecap="round" />
+          <circle cx="50" cy="62" r="3" fill={c} opacity="0.6" />
+          <text x="72" y="25" fontSize="12" fill={c} opacity="0.5" fontFamily="monospace">z</text>
+          <text x="80" y="18" fontSize="9" fill={c} opacity="0.35" fontFamily="monospace">z</text>
+        </g>
       );
     case 'thinking':
       return (
-        <>
-          <circle cx="32" cy="36" r="6" fill="currentColor" />
-          <circle cx="68" cy="36" r="6" fill="currentColor" />
-          <circle cx="34" cy="34" r="2" fill="var(--surface)" />
-          <circle cx="70" cy="34" r="2" fill="var(--surface)" />
-        </>
+        <g>
+          <circle cx="31" cy="38" r="5" fill={c} />
+          <circle cx="69" cy="38" r="5" fill={c} />
+          <circle cx="33" cy="36" r="2" fill="var(--surface)" />
+          <circle cx="71" cy="36" r="2" fill="var(--surface)" />
+          <path d="M42 62 Q50 58 58 62" stroke={c} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <text x="74" y="22" fontSize="14" fill={c} opacity="0.5" fontFamily="monospace">?</text>
+        </g>
       );
     case 'sad':
       return (
-        <>
-          <circle cx="32" cy="36" r="6" fill="currentColor" />
-          <circle cx="68" cy="36" r="6" fill="currentColor" />
-          <circle cx="32" cy="35" r="2.5" fill="var(--surface)" />
-          <circle cx="68" cy="35" r="2.5" fill="var(--surface)" />
-          <path d="M36 44 L36 50" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-          <path d="M64 44 L64 50" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-        </>
+        <g>
+          <circle cx="31" cy="38" r="5" fill={c} />
+          <circle cx="69" cy="38" r="5" fill={c} />
+          <line x1="33" y1="46" x2="33" y2="52" stroke={c} strokeWidth="1.5" strokeLinecap="round" opacity="0.4" />
+          <line x1="67" y1="46" x2="67" y2="52" stroke={c} strokeWidth="1.5" strokeLinecap="round" opacity="0.4" />
+          <path d="M38 65 Q50 57 62 65" stroke={c} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        </g>
       );
     case 'alert':
       return (
-        <>
-          <circle cx="32" cy="36" r="8" fill="currentColor" />
-          <circle cx="68" cy="36" r="8" fill="currentColor" />
-          <circle cx="32" cy="36" r="4" fill="var(--surface)" />
-          <circle cx="68" cy="36" r="4" fill="var(--surface)" />
-        </>
-      );
-  }
-}
-
-function Mouth({ mood }: { mood: Mood }) {
-  switch (mood) {
-    case 'happy':
-      return <path d="M36 62 Q50 74 64 62" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />;
-    case 'sleepy':
-      return <ellipse cx="50" cy="65" rx="4" ry="3" fill="currentColor" opacity="0.6" />;
-    case 'thinking':
-      return <path d="M40 65 Q45 62 50 65 Q55 68 60 65" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none" />;
-    case 'sad':
-      return <path d="M36 68 Q50 58 64 68" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />;
-    case 'alert':
-      return (
-        <ellipse cx="50" cy="66" rx="7" ry="6" stroke="currentColor" strokeWidth="2.5" fill="none" />
+        <g>
+          <circle cx="31" cy="38" r="7" stroke={c} strokeWidth="2.5" fill="none" />
+          <circle cx="69" cy="38" r="7" stroke={c} strokeWidth="2.5" fill="none" />
+          <circle cx="31" cy="38" r="2.5" fill={c} />
+          <circle cx="69" cy="38" r="2.5" fill={c} />
+          <ellipse cx="50" cy="64" rx="6" ry="5" stroke={c} strokeWidth="2.5" fill="none" />
+          <text x="80" y="22" fontSize="12" fill={c} opacity="0.6" fontFamily="monospace">!</text>
+        </g>
       );
   }
 }
@@ -98,22 +90,14 @@ export default function NodusFacePixel({ mood, shape = 'circle' }: { mood: Mood;
     return () => clearInterval(id);
   }, []);
 
-  const shapeClass = shape === 'square' ? styles.shapeSquare : shape === 'rect' ? styles.shapeRect : '';
+  const shapeClass = shape === 'square' ? styles.square : shape === 'rect' ? styles.rect : '';
 
   return (
     <div className={styles.wrapper}>
-      <div className={`${styles.ring} ${GLOW_MAP[mood]} ${shapeClass}`}>
-        <div className={`${styles.inner} ${shapeClass}`}>
-          <div className={`${styles.innerGlow} ${shapeClass}`} />
-          <svg
-            viewBox="0 0 100 100"
-            className={styles.svgFace}
-            style={{ color: 'var(--brand-700)' }}
-          >
-            <Eyes mood={mood} blinking={blinking} />
-            {!blinking && <Mouth mood={mood} />}
-          </svg>
-        </div>
+      <div className={`${styles.container} ${GLOW[mood]} ${shapeClass}`}>
+        <svg viewBox="0 0 100 100" className={styles.svgFace}>
+          <Face mood={mood} blinking={blinking} />
+        </svg>
       </div>
     </div>
   );
