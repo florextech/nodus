@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Mood, MOODS } from '../lib/moods';
 import NodusFace from './NodusFace';
+import styles from './NodusSimulator.module.css';
 
 export default function NodusSimulator() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -48,37 +49,30 @@ export default function NodusSimulator() {
   }, [logs]);
 
   return (
-    <div className="relative flex flex-col items-center gap-6 sm:gap-8">
+    <div className={styles.container}>
       {/* Header */}
-      <div className="flex items-center gap-3 w-full">
-        <div className="h-2 w-2 rounded-full bg-(--brand-600) animate-pulse shrink-0" />
-        <h1 className="text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase text-(--foreground)">
-          Nodus
-        </h1>
-        <div className="flex-1 h-px bg-(--border)" />
-        <span className="text-[0.55rem] sm:text-[0.6rem] text-(--muted) uppercase tracking-wider">v0.1.0</span>
+      <div className={styles.header}>
+        <div className={styles.dot} />
+        <h1 className={styles.title}>Nodus</h1>
+        <div className={styles.line} />
+        <span className={styles.version}>v0.1.0</span>
       </div>
 
       {/* Face area */}
-      <div className="relative w-full flex flex-col items-center py-4 sm:py-6">
+      <div className={styles.faceArea}>
         <NodusFace mood={mood} />
-        <div className="mt-4 sm:mt-5">
-          <span className="inline-flex items-center rounded-full border border-[rgba(189,241,70,0.35)] bg-[rgba(189,241,70,0.08)] px-3 py-1 text-[0.6rem] sm:text-[0.65rem] font-semibold text-(--brand-700) uppercase tracking-[0.18em]">
-            <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-(--brand-600)" />
-            {mood}
-          </span>
+        <div className={styles.pill}>
+          <span className={styles.pillDot} />
+          {mood}
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-(--border)" />
+      <div className={styles.divider} />
 
-      {/* Controls section */}
-      <div className="w-full space-y-3">
-        <p className="text-[0.55rem] sm:text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-(--muted)">
-          Estados
-        </p>
-        <div className="grid grid-cols-3 xs:grid-cols-5 sm:grid-cols-5 gap-1.5 sm:gap-2">
+      {/* Controls */}
+      <div className={styles.controls}>
+        <p className={styles.label}>Estados</p>
+        <div className={styles.grid}>
           {MOODS.map((m, i) => (
             <button
               key={m.name}
@@ -86,50 +80,35 @@ export default function NodusSimulator() {
                 setAutoMode(false);
                 setMood(i);
               }}
-              className={`flex flex-col items-center gap-0.5 sm:gap-1 rounded-lg sm:rounded-xl border px-1.5 sm:px-2 py-2 sm:py-3 text-center transition duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--brand-600) ${
-                i === currentIndex
-                  ? 'border-[rgba(189,241,70,0.65)] bg-[rgba(189,241,70,0.1)]'
-                  : 'border-(--border) bg-(--surface) hover:border-[rgba(189,241,70,0.4)] hover:bg-(--surface-muted)'
-              }`}
+              className={`${styles.moodBtn} ${i === currentIndex ? styles.moodBtnActive : ''}`}
             >
-              <span className={`text-base sm:text-lg ${i === currentIndex ? 'text-(--brand-700)' : 'text-(--foreground)'}`}>
+              <span className={`${styles.moodFace} ${i === currentIndex ? styles.moodFaceActive : ''}`}>
                 {m.face}
               </span>
-              <span className={`text-[0.5rem] sm:text-[0.55rem] uppercase tracking-wider font-medium ${i === currentIndex ? 'text-(--brand-600)' : 'text-(--muted)'}`}>
+              <span className={`${styles.moodName} ${i === currentIndex ? styles.moodNameActive : ''}`}>
                 {m.name}
               </span>
             </button>
           ))}
         </div>
 
-        {/* Auto toggle */}
         <button
           onClick={() => setAutoMode(!autoMode)}
-          className={`w-full rounded-lg sm:rounded-xl border px-4 py-2 sm:py-2.5 text-[0.65rem] sm:text-xs font-semibold transition duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--brand-600) ${
-            autoMode
-              ? 'border-[rgba(189,241,70,0.65)] bg-[linear-gradient(180deg,var(--brand-700),var(--brand-600))] text-[#111513]'
-              : 'border-(--border) bg-(--surface) text-(--foreground) hover:border-[rgba(189,241,70,0.52)]'
-          }`}
+          className={`${styles.autoBtn} ${autoMode ? styles.autoBtnActive : ''}`}
         >
           {autoMode ? '⏸ Pausar ciclo automático' : '▶ Iniciar ciclo automático'}
         </button>
       </div>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-(--border)" />
+      <div className={styles.divider} />
 
       {/* Log */}
-      <div className="w-full space-y-2">
-        <p className="text-[0.55rem] sm:text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-(--muted)">
-          Actividad
-        </p>
-        <div
-          ref={logRef}
-          className="w-full h-20 sm:h-24 rounded-lg sm:rounded-xl border border-(--border) bg-(--surface) p-2.5 sm:p-3 text-[0.55rem] sm:text-[0.6rem] font-mono text-(--muted) overflow-y-auto"
-        >
+      <div className={styles.logSection}>
+        <p className={styles.label}>Actividad</p>
+        <div ref={logRef} className={styles.log}>
           {logs.map((l, i) => (
-            <div key={i} className="py-0.5">
-              <span className="text-(--brand-500)">›</span> {l}
+            <div key={i} className={styles.logLine}>
+              <span className={styles.logPrompt}>›</span> {l}
             </div>
           ))}
         </div>

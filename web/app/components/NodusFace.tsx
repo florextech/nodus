@@ -1,7 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Mood, MOODS, MOOD_GLOW } from '../lib/moods';
+import { Mood, MOODS } from '../lib/moods';
+import styles from './NodusFace.module.css';
+
+const GLOW_MAP: Record<Mood, string> = {
+  happy: styles.glowHappy,
+  sleepy: styles.glowSleepy,
+  thinking: styles.glowThinking,
+  sad: styles.glowSad,
+  alert: styles.glowAlert,
+};
 
 export default function NodusFace({ mood }: { mood: Mood }) {
   const [blinking, setBlinking] = useState(false);
@@ -17,19 +26,16 @@ export default function NodusFace({ mood }: { mood: Mood }) {
   }, []);
 
   return (
-    <div className="relative">
-      <div
-        className={`w-32 h-32 sm:w-44 sm:h-44 rounded-full p-[2px] transition-all duration-700 ${MOOD_GLOW[mood]}`}
-        style={{ background: 'linear-gradient(135deg, rgba(189,241,70,0.3), rgba(118,183,61,0.1), rgba(189,241,70,0.2))' }}
-      >
-        <div className="w-full h-full rounded-full bg-(--surface) border border-(--border) flex items-center justify-center relative overflow-hidden">
-          <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_40%,rgba(189,241,70,0.06),transparent_60%)]" />
-          <span className="relative text-2xl sm:text-4xl font-mono text-(--brand-700) select-none transition-all duration-150">
+    <div className={styles.wrapper}>
+      <div className={`${styles.ring} ${GLOW_MAP[mood]}`}>
+        <div className={styles.inner}>
+          <div className={styles.innerGlow} />
+          <span className={styles.face}>
             {blinking ? '(——)' : moodData.face}
           </span>
         </div>
       </div>
-      <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 -translate-x-1/2 w-16 sm:w-24 h-2 sm:h-3 rounded-full bg-[radial-gradient(ellipse,rgba(189,241,70,0.15),transparent)] blur-sm" />
+      <div className={styles.reflection} />
     </div>
   );
 }
