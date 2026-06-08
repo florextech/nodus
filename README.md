@@ -1,28 +1,43 @@
 # Nodus
 
-Mascota/asistente virtual basado en IA que expresa emociones y responde al usuario.
-
-## Estado actual
-
-**Fase 1** — Simulador web con estados emocionales y representación visual ASCII.
+Mascota/asistente virtual con emociones, impulsado por IA.
 
 ## Cómo ejecutar
 
-Abre `simulator/index.html` en tu navegador. No requiere servidor ni dependencias.
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Abre http://localhost:3000
+
+## Stack
+
+- Next.js 16 + React + TypeScript
+- Tailwind CSS
 
 ## Estructura
 
 ```
 nodus/
-├─ simulator/
-│  └─ index.html    ← Simulador visual de Nodus
+├─ web/                  ← Frontend (Next.js)
+│  └─ app/
+│      ├─ components/
+│      │   ├─ NodusFace.tsx
+│      │   └─ NodusSimulator.tsx
+│      ├─ lib/moods.ts
+│      └─ page.tsx
 ├─ DEVELOPMENT_PLAN.md
 └─ README.md
 ```
 
 ## Roadmap
 
-1. ✅ Simulador web de estados emocionales
-2. Conectividad MQTT + backend
-3. Integración IA (OpenAI / OpenClaw)
-4. Hardware físico (ESP32 + pantalla)
+1. ✅ Simulador web con estados emocionales
+2. Chat con IA (texto)
+3. Memoria y personalidad
+4. Voz (entrada y salida)
+5. Cara animada (Canvas/SVG)
+6. MQTT + hardware
+7. Acciones / OpenClaw
