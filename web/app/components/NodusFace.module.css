@@ -64,6 +64,29 @@
   .reflection { bottom: -0.75rem; width: 6rem; height: 0.75rem; }
 }
 
+.faceKaomoji {
+  position: relative;
+  font-size: 1.25rem;
+  font-family: system-ui, sans-serif;
+  color: var(--brand-700);
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+@media (min-width: 640px) {
+  .faceKaomoji { font-size: 1.75rem; }
+}
+
+.pixelCanvas {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+
+@media (min-width: 640px) {
+  .pixelCanvas { width: 96px; height: 96px; }
+}
+
 /* Glow per mood */
 .glowHappy { box-shadow: 0 0 50px rgba(189, 241, 70, 0.35); }
 .glowSleepy { box-shadow: 0 0 40px rgba(118, 183, 61, 0.2); }

@@ -1,13 +1,17 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Mood, MOODS } from '../lib/moods';
+import { Mood, MOODS, FaceStyle } from '../lib/moods';
 import NodusFace from './NodusFace';
+import NodusFacePixel from './NodusFacePixel';
+import NodusFaceKaomoji from './NodusFaceKaomoji';
+import FaceStyleSwitcher from './FaceStyleSwitcher';
 import styles from './NodusSimulator.module.css';
 
 export default function NodusSimulator() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [autoMode, setAutoMode] = useState(true);
+  const [faceStyle, setFaceStyle] = useState<FaceStyle>('ascii');
   const [logs, setLogs] = useState<string[]>(['Nodus starting...']);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
@@ -48,6 +52,14 @@ export default function NodusSimulator() {
     if (logRef.current?.scrollTo) logRef.current.scrollTo(0, logRef.current.scrollHeight);
   }, [logs]);
 
+  const renderFace = () => {
+    switch (faceStyle) {
+      case 'pixel': return <NodusFacePixel mood={mood} />;
+      case 'kaomoji': return <NodusFaceKaomoji mood={mood} />;
+      default: return <NodusFace mood={mood} />;
+    }
+  };
+
   return (
     <div className={styles.container}>
       {/* Header */}
@@ -58,9 +70,12 @@ export default function NodusSimulator() {
         <span className={styles.version}>v0.1.0</span>
       </div>
 
+      {/* Style switcher */}
+      <FaceStyleSwitcher current={faceStyle} onChange={setFaceStyle} />
+
       {/* Face area */}
       <div className={styles.faceArea}>
-        <NodusFace mood={mood} />
+        {renderFace()}
         <div className={styles.pill}>
           <span className={styles.pillDot} />
           {mood}
