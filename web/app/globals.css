@@ -1,1 +1,43 @@
 @import "tailwindcss";
+
+:root {
+  --bg: #0b0d0c;
+  --surface: #111513;
+  --surface-muted: #171c19;
+  --foreground: #edf6ee;
+  --muted: #b8c4ba;
+  --border: #263028;
+
+  --brand-900: #f4ffe9;
+  --brand-700: #d7ff6d;
+  --brand-600: #bdf146;
+  --brand-500: #9ddf4b;
+  --brand-300: #76b73d;
+
+  --danger: #ef4444;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--foreground);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background:
+    radial-gradient(circle at 12% 5%, rgb(183 255 48 / 0.16), transparent 28%),
+    radial-gradient(circle at 88% 4%, rgb(124 231 52 / 0.12), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgb(22 163 74 / 0.1), transparent 35%),
+    var(--bg);
+  color: var(--foreground);
+  min-height: 100vh;
+}
+
+*::selection {
+  background: rgb(184 255 46 / 0.3);
+  color: var(--brand-900);
+}

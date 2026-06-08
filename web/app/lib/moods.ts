@@ -9,9 +9,9 @@ export const MOODS: { name: Mood; face: string }[] = [
 ];
 
 export const MOOD_GLOW: Record<Mood, string> = {
-  happy: 'shadow-[0_0_40px_rgba(100,255,150,0.3)]',
-  sleepy: 'shadow-[0_0_40px_rgba(150,150,255,0.2)]',
-  thinking: 'shadow-[0_0_40px_rgba(255,200,100,0.25)]',
-  sad: 'shadow-[0_0_40px_rgba(100,100,255,0.3)]',
-  alert: 'shadow-[0_0_40px_rgba(255,100,100,0.35)]',
+  happy: 'shadow-[0_0_50px_rgba(189,241,70,0.35)]',
+  sleepy: 'shadow-[0_0_40px_rgba(118,183,61,0.2)]',
+  thinking: 'shadow-[0_0_45px_rgba(215,255,109,0.28)]',
+  sad: 'shadow-[0_0_40px_rgba(118,183,61,0.15)]',
+  alert: 'shadow-[0_0_50px_rgba(239,68,68,0.3)]',
 };

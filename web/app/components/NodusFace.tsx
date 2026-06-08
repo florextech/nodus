@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Mood, MOODS, MOOD_GLOW } from '../lib/moods';
 
-export default function NodusFace({ mood }: Readonly<{ mood: Mood }>) {
+export default function NodusFace({ mood }: { mood: Mood }) {
   const [blinking, setBlinking] = useState(false);
   const moodData = MOODS.find((m) => m.name === mood)!;
 
@@ -18,9 +18,10 @@ export default function NodusFace({ mood }: Readonly<{ mood: Mood }>) {
 
   return (
     <div
-      className={`w-60 h-60 rounded-full bg-[#0f0f23] flex items-center justify-center transition-shadow duration-500 ${MOOD_GLOW[mood]}`}
+      className={`relative w-56 h-56 rounded-full bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center transition-all duration-500 ${MOOD_GLOW[mood]}`}
     >
-      <span className="text-5xl font-mono text-white select-none transition-opacity duration-100">
+      <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(189,241,70,0.04),transparent_70%)]" />
+      <span className="relative text-5xl font-mono text-[var(--brand-700)] select-none transition-opacity duration-100">
         {blinking ? '(——)' : moodData.face}
       </span>
     </div>
