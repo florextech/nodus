@@ -87,6 +87,16 @@
   .pixelCanvas { width: 80px; height: 80px; }
 }
 
+.svgFace {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+@media (min-width: 640px) {
+  .svgFace { width: 80px; height: 80px; }
+}
+
 /* Shape variants */
 .shapeSquare {
   border-radius: 1rem !important;
