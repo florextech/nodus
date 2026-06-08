@@ -3,8 +3,8 @@
 }
 
 .ring {
-  width: 8rem;
-  height: 8rem;
+  width: 6.5rem;
+  height: 6.5rem;
   border-radius: 9999px;
   padding: 2px;
   background: linear-gradient(135deg, rgba(189, 241, 70, 0.3), rgba(118, 183, 61, 0.1), rgba(189, 241, 70, 0.2));
@@ -12,7 +12,7 @@
 }
 
 @media (min-width: 640px) {
-  .ring { width: 11rem; height: 11rem; }
+  .ring { width: 9rem; height: 9rem; }
 }
 
 .inner {
