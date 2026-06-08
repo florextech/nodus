@@ -1,35 +1,28 @@
 # Nodus
 
-Mascota/asistente virtual físico basado en ESP32, MQTT y una capa de inteligencia artificial.
-
-## Visión
-
-Nodus es un dispositivo compañero que expresa emociones, reacciona a estímulos externos y se conecta a servicios en la nube para ofrecer una experiencia interactiva e inteligente.
+Mascota/asistente virtual basado en IA que expresa emociones y responde al usuario.
 
 ## Estado actual
 
-**Fase 1** — Arquitectura base del firmware con simulación de estados emocionales vía Serial Monitor.
+**Fase 1** — Simulador web con estados emocionales y representación visual ASCII.
 
-## Estructura del proyecto
+## Cómo ejecutar
+
+Abre `simulator/index.html` en tu navegador. No requiere servidor ni dependencias.
+
+## Estructura
 
 ```
 nodus/
-├─ firmware/
-│  └─ esp32/        ← Firmware principal
+├─ simulator/
+│  └─ index.html    ← Simulador visual de Nodus
+├─ DEVELOPMENT_PLAN.md
 └─ README.md
 ```
 
-## Tecnologías
-
-- ESP32 (DevKit C V4)
-- Arduino Framework
-- Wokwi (simulación)
-
 ## Roadmap
 
-1. ✅ Arquitectura base + simulación de estados
-2. Pantalla OLED/TFT
-3. Conectividad MQTT
-4. Sensores y botones
-5. Integración IA
-6. Feedback visual avanzado (LED RGB)
+1. ✅ Simulador web de estados emocionales
+2. Conectividad MQTT + backend
+3. Integración IA (OpenAI / OpenClaw)
+4. Hardware físico (ESP32 + pantalla)

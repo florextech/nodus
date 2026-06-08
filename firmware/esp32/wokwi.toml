@@ -1,5 +1,0 @@
-[wokwi]
-version = 1
-firmware = "sketch.ino"
-elf = ""
-gdbServerPort = 3333

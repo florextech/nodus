@@ -1,3 +1,0 @@
-# Nodus - Phase 2 dependencies
-Adafruit SSD1306
-Adafruit GFX Library
