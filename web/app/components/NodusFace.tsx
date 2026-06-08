@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Mood, MOODS, MOOD_GLOW } from '../lib/moods';
 
-export default function NodusFace({ mood }: { mood: Mood }) {
+export default function NodusFace({ mood }: Readonly<{ mood: Mood }>) {
   const [blinking, setBlinking] = useState(false);
   const moodData = MOODS.find((m) => m.name === mood)!;
 

@@ -44,7 +44,7 @@ export default function NodusSimulator() {
   }, [autoMode, next]);
 
   useEffect(() => {
-    logRef.current?.scrollTo(0, logRef.current.scrollHeight);
+    if (logRef.current?.scrollTo) logRef.current.scrollTo(0, logRef.current.scrollHeight);
   }, [logs]);
 
   return (
