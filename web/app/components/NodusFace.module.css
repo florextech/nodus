@@ -79,12 +79,33 @@
 
 .pixelCanvas {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
 }
 
 @media (min-width: 640px) {
-  .pixelCanvas { width: 96px; height: 96px; }
+  .pixelCanvas { width: 80px; height: 80px; }
+}
+
+/* Shape variants */
+.shapeSquare {
+  border-radius: 1rem !important;
+}
+
+.shapeRect {
+  border-radius: 1rem !important;
+  width: 8.5rem !important;
+  height: 6.5rem !important;
+}
+
+@media (min-width: 640px) {
+  .shapeRect {
+    width: 12rem !important;
+    height: 9rem !important;
+  }
+  .shapeSquare {
+    border-radius: 1.25rem !important;
+  }
 }
 
 /* Glow per mood */

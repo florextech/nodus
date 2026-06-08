@@ -1,17 +1,19 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Mood, MOODS, FaceStyle } from '../lib/moods';
+import { Mood, MOODS, FaceStyle, FaceShape, FACE_SHAPES } from '../lib/moods';
 import NodusFace from './NodusFace';
 import NodusFacePixel from './NodusFacePixel';
 import NodusFaceKaomoji from './NodusFaceKaomoji';
 import FaceStyleSwitcher from './FaceStyleSwitcher';
 import styles from './NodusSimulator.module.css';
+import switcherStyles from './FaceStyleSwitcher.module.css';
 
 export default function NodusSimulator() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [autoMode, setAutoMode] = useState(true);
   const [faceStyle, setFaceStyle] = useState<FaceStyle>('ascii');
+  const [faceShape, setFaceShape] = useState<FaceShape>('circle');
   const [logs, setLogs] = useState<string[]>(['Nodus starting...']);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
@@ -54,9 +56,9 @@ export default function NodusSimulator() {
 
   const renderFace = () => {
     switch (faceStyle) {
-      case 'pixel': return <NodusFacePixel mood={mood} />;
-      case 'kaomoji': return <NodusFaceKaomoji mood={mood} />;
-      default: return <NodusFace mood={mood} />;
+      case 'pixel': return <NodusFacePixel mood={mood} shape={faceShape} />;
+      case 'kaomoji': return <NodusFaceKaomoji mood={mood} shape={faceShape} />;
+      default: return <NodusFace mood={mood} shape={faceShape} />;
     }
   };
 
@@ -70,8 +72,21 @@ export default function NodusSimulator() {
         <span className={styles.version}>v0.1.0</span>
       </div>
 
-      {/* Style switcher */}
-      <FaceStyleSwitcher current={faceStyle} onChange={setFaceStyle} />
+      {/* Style + Shape switchers */}
+      <div className={styles.switcherRow}>
+        <FaceStyleSwitcher current={faceStyle} onChange={setFaceStyle} />
+        <div className={switcherStyles.switcher}>
+          {FACE_SHAPES.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setFaceShape(s.id)}
+              className={`${switcherStyles.tab} ${faceShape === s.id ? switcherStyles.tabActive : ''}`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Face area */}
       <div className={styles.faceArea}>
@@ -111,7 +126,7 @@ export default function NodusSimulator() {
           onClick={() => setAutoMode(!autoMode)}
           className={`${styles.autoBtn} ${autoMode ? styles.autoBtnActive : ''}`}
         >
-          {autoMode ? '⏸ Pausar ciclo automático' : '▶ Iniciar ciclo automático'}
+          {autoMode ? '⏸ Pausar' : '▶ Auto'}
         </button>
       </div>
 

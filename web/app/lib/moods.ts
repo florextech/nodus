@@ -1,10 +1,17 @@
 export type Mood = 'happy' | 'sleepy' | 'thinking' | 'sad' | 'alert';
 export type FaceStyle = 'ascii' | 'pixel' | 'kaomoji';
+export type FaceShape = 'circle' | 'square' | 'rect';
 
 export const FACE_STYLES: { id: FaceStyle; label: string }[] = [
   { id: 'ascii', label: 'ASCII' },
   { id: 'pixel', label: 'Pixel' },
   { id: 'kaomoji', label: 'Kaomoji' },
+];
+
+export const FACE_SHAPES: { id: FaceShape; label: string }[] = [
+  { id: 'circle', label: '⬤' },
+  { id: 'square', label: '⬜' },
+  { id: 'rect', label: '▬' },
 ];
 
 export const MOODS: { name: Mood; face: string }[] = [

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Mood, KAOMOJI_FACES } from '../lib/moods';
+import { Mood, KAOMOJI_FACES, FaceShape } from '../lib/moods';
 import styles from './NodusFace.module.css';
 
 const GLOW_MAP: Record<Mood, string> = {
@@ -12,7 +12,7 @@ const GLOW_MAP: Record<Mood, string> = {
   alert: styles.glowAlert,
 };
 
-export default function NodusFaceKaomoji({ mood }: { mood: Mood }) {
+export default function NodusFaceKaomoji({ mood, shape = 'circle' }: { mood: Mood; shape?: FaceShape }) {
   const [blinking, setBlinking] = useState(false);
 
   useEffect(() => {
@@ -24,17 +24,18 @@ export default function NodusFaceKaomoji({ mood }: { mood: Mood }) {
     return () => clearInterval(id);
   }, []);
 
+  const shapeClass = shape === 'square' ? styles.shapeSquare : shape === 'rect' ? styles.shapeRect : '';
+
   return (
     <div className={styles.wrapper}>
-      <div className={`${styles.ring} ${GLOW_MAP[mood]}`}>
-        <div className={styles.inner}>
-          <div className={styles.innerGlow} />
+      <div className={`${styles.ring} ${GLOW_MAP[mood]} ${shapeClass}`}>
+        <div className={`${styles.inner} ${shapeClass}`}>
+          <div className={`${styles.innerGlow} ${shapeClass}`} />
           <span className={styles.faceKaomoji}>
             {blinking ? '(≡ω≡)' : KAOMOJI_FACES[mood]}
           </span>
         </div>
       </div>
-      <div className={styles.reflection} />
     </div>
   );
 }
