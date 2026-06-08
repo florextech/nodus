@@ -1,236 +1,290 @@
-# Plan de Desarrollo — Nodus
+# Nodus — Plan de Desarrollo
 
-## Resumen del Proyecto
+## Visión
 
-**Nodus** es una mascota/asistente virtual física basada en ESP32 que expresa emociones, responde al usuario y se conecta a servicios de IA para generar respuestas con personalidad.
+Nodus es un asistente personal con emociones. Vive en la web, habla, escucha, recuerda, y en el futuro existirá como dispositivo físico. Es open source y extensible.
 
 ---
 
 ## Arquitectura General
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                      USUARIO                             │
-│              (voz / texto / botón)                       │
-└─────────────────────┬───────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────┐
-│                 ESP32 (Nodus)                            │
-│  ┌──────────┐  ┌──────────┐  ┌────────────────────┐    │
-│  │NodusState│  │NodusFace │  │ NodusComm (MQTT)   │    │
-│  └──────────┘  └──────────┘  └─────────┬──────────┘    │
-│       │              │                  │               │
-│  ┌────▼──────────────▼──┐              │               │
-│  │  Pantalla OLED/TFT   │              │               │
-│  └──────────────────────┘              │               │
-└────────────────────────────────────────┼───────────────┘
-                                         │ MQTT
-┌────────────────────────────────────────▼───────────────┐
-│              Backend / Bridge                            │
-│  ┌──────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │MQTT Broker│  │ API Gateway  │  │ OpenAI/LLM   │     │
-│  └──────────┘  └──────────────┘  └──────────────┘     │
-└─────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────┐
+│                        USUARIO                              │
+│                  (texto / voz / touch)                       │
+└──────────────────────────┬─────────────────────────────────┘
+                           │
+┌──────────────────────────▼─────────────────────────────────┐
+│                    FRONTEND WEB                              │
+│  ┌─────────┐  ┌──────────┐  ┌───────────┐  ┌───────────┐  │
+│  │  Face   │  │   Chat   │  │  Voice In │  │ Voice Out │  │
+│  │(ASCII/  │  │  (text)  │  │  (STT)    │  │  (TTS)    │  │
+│  │ Canvas) │  │          │  │           │  │           │  │
+│  └─────────┘  └──────────┘  └───────────┘  └───────────┘  │
+└──────────────────────────┬─────────────────────────────────┘
+                           │ WebSocket
+┌──────────────────────────▼─────────────────────────────────┐
+│                      BACKEND (Node.js)                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────┐  │
+│  │  MQTT    │  │   AI     │  │  Memory  │  │  Actions  │  │
+│  │  Bridge  │  │  Engine  │  │  Store   │  │  (tools)  │  │
+│  └──────────┘  └──────────┘  └──────────┘  └───────────┘  │
+└──────────────────────────┬─────────────────────────────────┘
+                           │
+              ┌────────────┼────────────┐
+              ▼            ▼            ▼
+        ┌──────────┐ ┌──────────┐ ┌──────────┐
+        │  OpenAI  │ │  Ollama  │ │ OpenClaw │
+        │  (GPT)   │ │ (local)  │ │          │
+        └──────────┘ └──────────┘ └──────────┘
 ```
 
 ---
 
-## Fase 1 — Arquitectura Base ✅ (Completada)
+## Fase 1 — Simulador Web Estático ✅ (Completada)
 
-**Objetivo:** Firmware base con máquina de estados emocionales y simulación vía Serial Monitor.
-
-**Componentes implementados:**
-- `NodusState` — Máquina de estados (HAPPY, SLEEPY, THINKING, SAD, ALERT)
-- `NodusFace` — Renderizado ASCII de caras emocionales
-- `config.h` — Constantes de configuración
-- Simulación en Wokwi (ESP32 DevKit C V4)
-
-**Resultado:** Nodus cicla entre estados emocionales cada 3 segundos e imprime la cara correspondiente por Serial.
+**Ya tenemos:** `simulator/index.html` con caras ASCII, cambio de estados y parpadeo.
 
 ---
 
-## Fase 2 — Pantalla Física + Caras Gráficas
+## Fase 2 — Chat con IA (texto)
 
-**Objetivo:** Nodus muestra sus emociones en una pantalla OLED con gráficos bitmap.
+**Objetivo:** El usuario escribe, Nodus responde con texto y cambia su emoción según el contexto.
 
-**Tecnologías/Componentes:**
-- Pantalla OLED SSD1306 128x64 (I2C)
-- Librería: `Adafruit_SSD1306` + `Adafruit_GFX`
+**Entregable:** Escribir un mensaje → Nodus responde con personalidad y su cara cambia.
 
-**Tareas:**
+### Tareas:
 
-1. **Integración de pantalla OLED** — Clase `NodusDisplay` como wrapper. Mostrar mood actual en pantalla. Actualizar `diagram.json` para Wokwi.
+1. **Backend básico (Node.js + TypeScript)**
+   - Servidor Express/Fastify con endpoint WebSocket
+   - Recibe mensaje de texto, lo envía a OpenAI, devuelve respuesta + mood
+   - System prompt con personalidad adaptativa de Nodus
 
-2. **Caras gráficas bitmap** — Bitmaps 64x64 por emoción en `faces_bmp.h`. Refactorear `NodusFace` para renderizar en pantalla.
+2. **Integración OpenAI**
+   - Chat Completions con GPT-4o-mini
+   - La respuesta incluye `{ text, mood }` (structured output)
+   - Moods: HAPPY, SLEEPY, THINKING, SAD, ALERT (+ nuevos si hacen falta)
 
-3. **Animación idle y parpadeo** — Clase `NodusAnimator` con parpadeo aleatorio cada 3-7s. Micro-animaciones que dan vida a Nodus.
+3. **Frontend: chat + conexión WebSocket**
+   - Input de texto en el simulador
+   - Mostrar respuestas de Nodus como burbujas de chat
+   - La cara cambia al mood que devuelve la IA
+   - Estado THINKING mientras espera respuesta
 
----
-
-## Fase 3 — Conectividad WiFi + MQTT
-
-**Objetivo:** Nodus se conecta a WiFi y puede enviar/recibir mensajes MQTT.
-
-**Tecnologías/Componentes:**
-- WiFi (integrado en ESP32)
-- Librería: `PubSubClient`
-- Broker MQTT: Mosquitto (local) o HiveMQ Cloud (producción)
-
-**Tareas:**
-
-4. **Conexión WiFi** — Clase `NodusWiFi` con reconexión automática. Ícono de estado en pantalla.
-
-5. **Cliente MQTT** — Clase `NodusComm`. Topics: `nodus/mood`, `nodus/command`, `nodus/chat/in`, `nodus/chat/out`. Formato JSON.
-
-6. **Input del usuario vía MQTT** — Simular texto como input. Nodus reacciona visualmente al recibir mensajes.
+4. **Dockerización**
+   - `docker-compose.yml` con el backend
+   - `.env` para API keys
+   - Ready para deploy en VPS
 
 ---
 
-## Fase 4 — Backend/Bridge con Integración IA
+## Fase 3 — Memoria y Personalidad
 
-**Objetivo:** Servicio backend que conecta MQTT con OpenAI API para generar respuestas con emoción.
+**Objetivo:** Nodus recuerda conversaciones anteriores y su personalidad evoluciona.
 
-**Tecnologías/Componentes:**
-- Node.js + TypeScript
-- Librería: `mqtt` (npm), `openai` (npm)
-- OpenAI API (GPT-4o-mini)
-- Docker + docker-compose
+**Entregable:** Cerrar la página, volver al día siguiente, Nodus recuerda de qué hablaron.
 
-**Tareas:**
+### Tareas:
 
-7. **Scaffold del backend** — Proyecto `nodus/backend/` con conexión MQTT. docker-compose con Mosquitto + backend.
+5. **Almacenamiento de conversaciones**
+   - SQLite (o PostgreSQL) para historial
+   - Últimos N mensajes como contexto en cada request a la IA
+   - Resúmenes automáticos de conversaciones largas
 
-8. **Integración OpenAI** — Servicio `AIService`. System prompt con personalidad de Nodus. Respuestas con texto + mood.
+6. **Personalidad adaptativa**
+   - Score emocional acumulativo (no solo el último mensaje)
+   - El system prompt incluye el estado anímico actual
+   - "Humor del día" basado en las interacciones recientes
 
-9. **Nodus procesa respuestas** — Parsear JSON con ArduinoJson. Actualizar estado + mostrar texto en pantalla.
-
----
-
-## Fase 5 — Personalidad Persistente + Contexto
-
-**Objetivo:** Nodus mantiene contexto de conversación y personalidad consistente.
-
-**Tecnologías/Componentes:**
-- Backend: historial de conversación (SQLite)
-- ESP32: NVS para persistir mood
-- System prompt elaborado
-
-**Tareas:**
-
-10. **Historial de conversación** — Buffer circular de 10 mensajes. Contexto enviado a OpenAI.
-
-11. **Estado anímico acumulativo** — Score emocional que evoluciona con interacciones.
-
-12. **Persistencia en NVS** — Guardar/restaurar mood entre reinicios con `Preferences.h`.
+7. **Sesiones de usuario**
+   - Auth básica (token simple o usuario/contraseña)
+   - Cada usuario tiene su propio Nodus con su memoria
 
 ---
 
-## Fase 6 — Input de Audio (Micrófono)
+## Fase 4 — Voz (entrada y salida)
 
-**Objetivo:** El usuario le habla a Nodus y su voz se transcribe.
+**Objetivo:** Hablarle a Nodus y que responda con voz.
 
-**Tecnologías/Componentes:**
-- Micrófono I2S: INMP441
-- Speech-to-Text: Whisper API (OpenAI)
-- Botón físico: push-to-talk
+**Entregable:** Mantener una conversación por voz con Nodus en el navegador.
 
-**Tareas:**
+### Tareas:
 
-13. **Captura de audio** — Clase `NodusAudio` con I2S RX. Buffer de ~3 segundos. Push-to-talk.
+8. **Speech-to-Text (entrada de voz)**
+   - Web Speech API del navegador (gratis, sin backend)
+   - Fallback: Whisper API vía backend
+   - Botón push-to-talk + detección de silencio
 
-14. **Transcripción** — Envío de audio al backend vía MQTT. Whisper API para STT.
+9. **Text-to-Speech (respuesta hablada)**
+   - OpenAI TTS API (voces naturales)
+   - Audio streaming al frontend
+   - Animación de "hablando" en la cara de Nodus
 
-15. **Feedback visual** — VAD simple. LED RGB como indicador de estado de grabación.
-
----
-
-## Fase 7 — Output de Audio (Respuesta Hablada)
-
-**Objetivo:** Nodus habla sus respuestas.
-
-**Tecnologías/Componentes:**
-- Amplificador I2S: MAX98357A + speaker 3W
-- Text-to-Speech: OpenAI TTS API
-
-**Tareas:**
-
-16. **Reproducción de audio** — Clase `NodusSpeak` con I2S TX. Tono de bienvenida.
-
-17. **TTS integrado** — Backend genera audio con OpenAI TTS. Streaming al ESP32.
+10. **UX de voz**
+    - Indicador visual: escuchando → pensando → hablando
+    - Cancelar/interrumpir respuesta
+    - Modo manos libres (activación por voz opcional)
 
 ---
 
-## Fase 8 — Refinamiento y Hardware Final
+## Fase 5 — Cara Animada (versión gráfica)
 
-**Objetivo:** Pulir la experiencia y migrar a hardware definitivo.
+**Objetivo:** Nodus tiene dos modos visuales: ASCII (retro) y gráfico (animado).
 
-**Tecnologías/Componentes:**
-- Pantalla TFT ST7789 240x240 (color)
-- LED RGB WS2812 (NeoPixel)
-- Sensor táctil capacitivo
-- Carcasa impresa en 3D
+**Entregable:** Toggle entre cara ASCII y cara Canvas/SVG animada con expresiones suaves.
 
-**Tareas:**
+### Tareas:
 
-18. **Pantalla TFT a color** — Sprites a color, animaciones fluidas con TFT_eSPI.
+11. **Cara Canvas/SVG animada**
+    - Ojos, boca, cejas con transiciones suaves
+    - Micro-animaciones: parpadeo, respiración, mirar al cursor
+    - Colores/glow según emoción
 
-19. **Interacciones físicas** — Touch como "caricia". LED RGB por emoción.
+12. **Sistema de expresiones**
+    - Más granularidad emocional (curioso, sorprendido, concentrado, etc.)
+    - Transiciones animadas entre expresiones
+    - Reacciones inmediatas (mientras la IA piensa)
 
-20. **Empaquetado final** — Esquemático, BOM, guía de ensamblaje, carcasa 3D.
-
----
-
-## Resumen de Componentes por Fase
-
-| Fase | Hardware nuevo | Software nuevo | Librería/Servicio |
-|------|---------------|----------------|-------------------|
-| 1 ✅ | — | NodusState, NodusFace | — |
-| 2 | OLED SSD1306 | NodusDisplay, NodusAnimator | Adafruit_SSD1306, Adafruit_GFX |
-| 3 | — | NodusWiFi, NodusComm | PubSubClient, WiFi.h |
-| 4 | — | Backend Node.js, AIService | mqtt, openai, Docker |
-| 5 | — | Historial, Personalidad | Preferences.h, ArduinoJson |
-| 6 | INMP441, Botón | NodusAudio | I2S driver, Whisper API |
-| 7 | MAX98357A, Speaker | NodusSpeak | I2S output, OpenAI TTS |
-| 8 | TFT ST7789, LED RGB, Touch | Upgrade visual | TFT_eSPI, Adafruit_NeoPixel |
+13. **Toggle ASCII ↔ Gráfico**
+    - Preferencia guardada por usuario
+    - Ambos modos siempre funcionales
 
 ---
 
-## Estimación de Tiempos
+## Fase 6 — MQTT + Preparación para Hardware
 
-| Fase | Duración estimada | Complejidad |
-|------|-------------------|-------------|
-| 2 — Pantalla | 1-2 semanas | ⭐⭐ |
-| 3 — MQTT | 1-2 semanas | ⭐⭐ |
-| 4 — Backend + IA | 2-3 semanas | ⭐⭐⭐ |
-| 5 — Personalidad | 1-2 semanas | ⭐⭐ |
-| 6 — Audio Input | 2-3 semanas | ⭐⭐⭐⭐ |
-| 7 — Audio Output | 1-2 semanas | ⭐⭐⭐ |
-| 8 — Hardware Final | 3-4 semanas | ⭐⭐⭐⭐ |
+**Objetivo:** Backend conectado a MQTT para que un dispositivo físico pueda comunicarse con Nodus.
 
-**Total estimado:** ~12-18 semanas (3-4 meses)
+**Entregable:** Enviar un mensaje desde MQTT Explorer → Nodus responde vía MQTT.
 
----
+### Tareas:
 
-## Stack Tecnológico Completo
+14. **Broker MQTT (Mosquitto)**
+    - Agregado al docker-compose
+    - Topics definidos: `nodus/chat/in`, `nodus/chat/out`, `nodus/mood`, `nodus/command`
 
-```
-Firmware (ESP32):      C++ / Arduino Framework
-Simulación:            Wokwi
-Backend:               Node.js + TypeScript
-Broker MQTT:           Mosquitto (Docker)
-IA - Chat:             OpenAI GPT-4o-mini
-IA - STT:              OpenAI Whisper
-IA - TTS:              OpenAI TTS
-Infra:                 Docker Compose (dev), VPS o Railway (prod)
-Hardware final:        ESP32 + OLED/TFT + INMP441 + MAX98357A + NeoPixel
-```
+15. **Bridge MQTT ↔ Backend**
+    - El backend publica/suscribe en MQTT
+    - Mismo flujo de IA, pero entrada/salida por MQTT en vez de WebSocket
+    - El frontend web sigue funcionando en paralelo
+
+16. **Protocolo documentado**
+    - Formato de mensajes JSON
+    - Guía para conectar un ESP32 (preparación para fase 8)
 
 ---
 
-## Notas
+## Fase 7 — Acciones y Herramientas (Asistente)
 
-1. **Cada fase es funcional por sí sola** — al terminar la Fase 3, Nodus ya es un dispositivo conectado que responde a comandos MQTT.
-2. **El backend es obligatorio** — el ESP32 no puede llamar directamente a OpenAI API de forma confiable (memory, SSL). El bridge MQTT↔OpenAI es la pieza clave.
-3. **Audio es la parte más compleja** — I2S requiere configuración cuidadosa. Empezar con texto y agregar audio después.
-4. **Costos de API** — GPT-4o-mini ~$0.15/1M tokens input. Para uso personal: ~$1-5/mes.
-5. **Alternativa self-hosted** — Ollama + Llama 3 para chat, Faster-Whisper para STT. Elimina costos recurrentes.
+**Objetivo:** Nodus puede hacer cosas más allá de conversar.
+
+**Entregable:** "Nodus, ponme un recordatorio para mañana" → funciona.
+
+### Tareas:
+
+17. **Sistema de tools/acciones**
+    - Function calling de OpenAI (o equivalente en Ollama)
+    - Acciones base: recordatorios, notas, timer, clima
+    - Arquitectura extensible para agregar más tools
+
+18. **Integración OpenClaw**
+    - Nodus como frontend de OpenClaw
+    - Delegar tareas complejas a agentes de OpenClaw
+    - Reportar progreso con cambios de emoción
+
+19. **Notificaciones**
+    - Nodus puede iniciar conversación (recordatorios, alertas)
+    - Push notifications en web
+    - Vía MQTT para el hardware
+
+---
+
+## Fase 8 — Hardware Físico (ESP32)
+
+**Objetivo:** Nodus existe como dispositivo físico de escritorio.
+
+**Entregable:** Un dispositivo con pantalla que muestra la cara, se conecta al backend y conversa.
+
+### Tareas:
+
+20. **Firmware ESP32**
+    - Conecta a WiFi + MQTT broker
+    - Recibe mood + texto → muestra en pantalla
+    - Envía input de usuario (botón/micrófono) al backend
+
+21. **Pantalla OLED/TFT**
+    - Caras bitmap o vectoriales
+    - Animaciones de transición
+
+22. **Audio físico (opcional)**
+    - Micrófono I2S (INMP441)
+    - Speaker (MAX98357A)
+    - Push-to-talk con botón
+
+23. **Carcasa**
+    - Diseño 3D imprimible
+    - BOM y guía de ensamblaje
+
+---
+
+## Fase 9 — Motor IA Local (Ollama)
+
+**Objetivo:** Nodus funciona sin internet usando un modelo local.
+
+**Entregable:** Toggle en config entre OpenAI y Ollama. Funciona offline.
+
+### Tareas:
+
+24. **Abstracción del motor IA**
+    - Interface `AIProvider` con implementaciones: OpenAI, Ollama
+    - Selección por config (`.env`)
+    - Mismo formato de respuesta (text + mood)
+
+25. **Setup Ollama**
+    - Docker container con modelo (Llama 3 / Mistral)
+    - Optimización de system prompt para modelos pequeños
+    - Fallback: si Ollama falla → OpenAI
+
+---
+
+## Stack Tecnológico
+
+| Capa | Tecnología |
+|------|-----------|
+| Frontend | HTML/CSS/JS vanilla (fase 1-2), luego SvelteKit o similar |
+| Backend | Node.js + TypeScript + Fastify |
+| Base de datos | SQLite (dev) → PostgreSQL (prod) |
+| IA | OpenAI GPT-4o-mini + Ollama (local) |
+| STT | Web Speech API + Whisper API (fallback) |
+| TTS | OpenAI TTS |
+| Mensajería | WebSocket (web) + MQTT (hardware) |
+| Broker | Mosquitto |
+| Infra | Docker Compose → VPS propio |
+| Hardware | ESP32 + SSD1306/TFT + INMP441 + MAX98357A |
+
+---
+
+## Estimación
+
+| Fase | Tiempo | Prioridad |
+|------|--------|-----------|
+| 2 — Chat con IA | 1-2 semanas | 🔴 Alta |
+| 3 — Memoria | 1 semana | 🔴 Alta |
+| 4 — Voz | 1-2 semanas | 🟡 Media |
+| 5 — Cara animada | 1-2 semanas | 🟡 Media |
+| 6 — MQTT | 1 semana | 🟡 Media |
+| 7 — Acciones/OpenClaw | 2-3 semanas | 🟡 Media |
+| 8 — Hardware | 3-4 semanas | 🟢 Baja (futuro) |
+| 9 — IA local | 1 semana | 🟢 Baja |
+
+**Total: ~12-16 semanas** para tener Nodus web completo con voz, memoria y acciones.
+
+---
+
+## Principios
+
+- **Incremental**: cada fase entrega algo funcional.
+- **Desacoplado**: frontend, backend, IA, y hardware son independientes.
+- **Open source**: diseñado para que otros lo repliquen y extiendan.
+- **Offline-first posible**: Ollama como alternativa local.
+- **Hardware-ready**: MQTT como puente universal entre web y dispositivos.
