@@ -17,13 +17,22 @@ export default function NodusFace({ mood }: { mood: Mood }) {
   }, []);
 
   return (
-    <div
-      className={`relative w-56 h-56 rounded-full bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center transition-all duration-500 ${MOOD_GLOW[mood]}`}
-    >
-      <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(189,241,70,0.04),transparent_70%)]" />
-      <span className="relative text-5xl font-mono text-[var(--brand-700)] select-none transition-opacity duration-100">
-        {blinking ? '(——)' : moodData.face}
-      </span>
+    <div className="relative">
+      {/* Outer ring */}
+      <div className={`w-44 h-44 rounded-full p-[2px] transition-all duration-700 ${MOOD_GLOW[mood]}`}
+        style={{ background: 'linear-gradient(135deg, rgba(189,241,70,0.3), rgba(118,183,61,0.1), rgba(189,241,70,0.2))' }}
+      >
+        {/* Inner face */}
+        <div className="w-full h-full rounded-full bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center relative overflow-hidden">
+          {/* Subtle inner glow */}
+          <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_40%,rgba(189,241,70,0.06),transparent_60%)]" />
+          <span className="relative text-4xl font-mono text-[var(--brand-700)] select-none transition-all duration-150">
+            {blinking ? '(——)' : moodData.face}
+          </span>
+        </div>
+      </div>
+      {/* Bottom reflection */}
+      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24 h-3 rounded-full bg-[radial-gradient(ellipse,rgba(189,241,70,0.15),transparent)] blur-sm" />
     </div>
   );
 }
